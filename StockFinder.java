@@ -22,41 +22,60 @@ public class StockFinder {
 
         String json = null;
         try {
+            // Download JSON file to a String object with the given stock symbol.
+            // If this fails, null is returned. This can fail if the symbol is wrong
+            // or if there is no internet connection 
             json = readUrl("https://www.google.com/finance/info?q=" + symbol);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
-        StockQuote quote = new StockQuote();
+        
+        //Create placeholder vaiables
+        StockQuote quote;
+        String id;
+        String symbol;
+        double lastPrice;
+        String lastTrade;
         try {
+            //Create a JSON reader to parse the String
             JsonReader reader = new JsonReader(new StringReader(json));
+            //Setting lenient to true will allow the parser to ignore a feww issues it may find
+            //in this case, the Google JSON file starts with a "//" which won't parse properly
             reader.setLenient(true);
             reader.beginObject();
 
+            //Start cycling through the JSON object and pull out the important data
             while (reader.hasNext()) {
                 String name = reader.nextName();
                 if (name.equals("id")) {
-                    quote.setId(reader.nextString());
+                    id = reader.nextString();
                 } else if (name.equals("t")) {
-                    quote.setT(reader.nextString());
+                    symbol = reader.nextString();
                 } else if (name.equals("l")) {
-                    quote.setL(reader.nextDouble());
+                    lastPrice = reader.nextDouble();
                 } else if (name.equals("elt")) {
-                    quote.setElt(reader.nextString());
+                    lastTrade = reader.nextString();
                 } else {
-                    reader.skipValue(); // avoid some unhandle events
+                    //Ignore anything not listed
+                    reader.skipValue();
                 }
             }
 
             reader.endObject();
             reader.close();
+            
+            //create the StockQuote object and return it
+            stock = new Stock(id, symbol, lastPrice, lastTrade);
+            return stock;
 
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
-
-        return quote;
+        
+        //If all else fails, return null
+        return null;
     }
     
     private static String readUrl(String urlString) {

@@ -4,15 +4,36 @@ public class StockQuote {
     //ID
     private String id;
     //Symbol
-    private String t;
+    private String symbol;
     //Last quote
-    private double l;
+    private double lastPrice;
     //Last update
-    private String elt;
+    private String lastTrade;
+    //Shares
+    private int shares;
+    //Total spent
+    private double totalCost;
+    //Average share worth;
+    private double sharePrice;
+    
+    /**
+     * Creates new object with initial data.
+     */
+    public StockQuote(String id, String symbol, double lastPrice, String lastTrade){
+        this.id = id;
+        this.symbol = symbol;
+        this.lastPrice = lastPrice;
+        this.lastTrade = lastTrade;
+        shares = 0;
+    }
+    
     @Override
     public String toString() {
-        return "StockQuote [id=" + id + ", t=" + t + ", l=" + l
-                + ", elt=" + elt + "]";
+        
+        //loss/gain
+        double difference = totalCost - (lastPrice * shares);
+        
+        return symbol + "\t" + shares + "\n" + lastPrice + "\t" + difference;
     }
     public String getId() {
         return id;
@@ -20,22 +41,43 @@ public class StockQuote {
     public void setId(String id) {
         this.id = id;
     }
-    public String getT() {
+    public String getSymbol() {
         return t;
     }
-    public void setT(String t) {
+    public void setSymbol(String t) {
         this.t = t;
     }
-    public double getL() {
+    public double getLastPrice() {
         return l;
     }
-    public void setL(double l) {
-        this.l = l;
+    public void setLastPrice(double l) {
+        lastPrice = l;
     }
-    public String getElt() {
+    public String getLastTrade() {
         return elt;
     }
-    public void setElt(String elt) {
-        this.elt = elt;
+    public void setLastTrade(String elt) {
+        lastTrade = elt;
+    }
+    public int getShares(){
+        return shares;
+    }
+    public void setShares(int shares){
+        this.shares = shares;
+    }
+    public void addShares(int shares, double price){
+        
+        this.shares += shares;
+        totalCost += (shares * price);
+        sharePrice = totalCost / shares;
+    }
+    public double sellShares(int shares){
+        
+        this.shares -= shares;
+        worth = shares * lastPrice;
+        totalCost -= worth;
+        sharePrice = totalCost / this.shares;
+        
+        return worth;
     }
 }
